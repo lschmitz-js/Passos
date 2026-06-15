@@ -1,5 +1,5 @@
 import { formatDateLocale } from '../lib/dates';
-import { useLocale } from '../lib/i18n';
+import { useLocale, useT } from '../lib/i18n';
 import type { Week } from '../lib/api';
 
 type Props = {
@@ -10,6 +10,7 @@ type Props = {
 
 export function WeekNav({ weeks, idx, onChange }: Props) {
   const { locale } = useLocale();
+  const t = useT();
   const w = weeks[idx];
   if (!w) return null;
   return (
@@ -21,8 +22,8 @@ export function WeekNav({ weeks, idx, onChange }: Props) {
       >
         ‹
       </button>
-      <span className="text-sm font-semibold min-w-[150px] text-center">
-        {formatDateLocale(w.weekStart, locale)} – {formatDateLocale(w.weekEnd, locale)}
+      <span className="text-sm font-semibold min-w-[200px] text-center">
+        {t('week.num', idx + 1)} · {formatDateLocale(w.weekStart, locale)} – {formatDateLocale(w.weekEnd, locale)}
       </span>
       <button
         onClick={() => onChange(idx + 1)}

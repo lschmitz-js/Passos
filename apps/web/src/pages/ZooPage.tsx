@@ -1,7 +1,7 @@
 import { useState, useMemo, Fragment } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
-import { fetchLeaderboard } from '../lib/api';
+import { fetchLeaderboard, type Week } from '../lib/api';
 import { GROUPS, parseGroup } from '../lib/groups';
 import { buildWeek, buildYear, pickDefaultWeekIdx, computeAnimalBands } from '../lib/leaderboard';
 import { formatDateLocale, fmtNum } from '../lib/dates';
@@ -13,6 +13,36 @@ import { WeekNav } from '../components/WeekNav';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { GapBadge } from '../components/GapBadge';
 import { AnimalRef } from '../components/AnimalRef';
+
+// Cumulative gap between two competitors over the last `count` weeks (through `idx`).
+// `gap` = their cumulative-total difference at that week's end; `delta` = how the gap
+// moved vs the previous week (= the leader's weekly steps minus the chaser's).
+function gapHistory(
+  weeks: Week[],
+  aboveId: string,
+  belowId: string,
+  idx: number,
+  count = 4
+): { week: number; gap: number; delta: number | null }[] {
+  const stepsAt = (id: string, w: number) =>
+    weeks[w]?.entries.find((e) => e.id === id)?.steps ?? 0;
+  const start = Math.max(0, idx - (count - 1));
+  let cumA = 0;
+  let cumB = 0;
+  for (let w = 0; w < start; w++) {
+    cumA += stepsAt(aboveId, w);
+    cumB += stepsAt(belowId, w);
+  }
+  const rows: { week: number; gap: number; delta: number | null }[] = [];
+  for (let w = start; w <= idx; w++) {
+    const aw = stepsAt(aboveId, w);
+    const bw = stepsAt(belowId, w);
+    cumA += aw;
+    cumB += bw;
+    rows.push({ week: w + 1, gap: cumA - cumB, delta: w === 0 ? null : aw - bw });
+  }
+  return rows;
+}
 
 function useGroup() {
   const [location] = useLocation();
@@ -147,13 +177,10 @@ export function ZooPage() {
               {yearRows.map((p, i) => {
                 const above = i > 0 ? yearRows[i - 1]! : null;
                 const gap = above ? above.total - p.total : 0;
-                const gapDelta =
-                  above && above.prevTotal != null && p.prevTotal != null
-                    ? gap - (above.prevTotal - p.prevTotal)
-                    : null;
+                const history = above ? gapHistory(weeks, above.id, p.id, idx) : null;
                 return (
                   <Fragment key={p.id}>
-                    {above && <GapBadge gap={gap} delta={gapDelta} />}
+                    {above && <GapBadge gap={gap} history={history} />}
                     <LeaderboardRow
                       mode="year"
                       id={p.id}
