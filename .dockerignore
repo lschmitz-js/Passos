@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+**/dist
+**/dist-test
+data/
+*.db
+*.db-shm
+*.db-wal
+.git
+.DS_Store
+*.log
+__pycache__/
+*.pyc
+.venv/

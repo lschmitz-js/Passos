@@ -1,0 +1,45 @@
+services:
+  passos:
+    build: .
+    image: passos:latest
+    container_name: passos
+    restart: unless-stopped
+    # Caddy reaches this via the shared docker network at `passos:8080`.
+    # 8081 stays mapped publicly for IP-based testing during parallel run;
+    # drop it once zoologico.lbschmitz.ca is verified.
+    expose:
+      - "8080"
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      DB_PATH: /data/passos.db
+    networks:
+      - racha_default
+
+  passos-collector:
+    build:
+      context: .
+      dockerfile: collector/Dockerfile
+    image: passos-collector:latest
+    container_name: passos-collector
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    environment:
+      DB_PATH: /data/passos.db
+      TOKENSTORE: /data/.garminconnect
+      NAMES_FILE: /data/names.json
+      INTERVAL_SECONDS: "3600"
+      LOOKBACK_DAYS: "7"
+    depends_on:
+      - passos
+
+networks:
+  racha_default:
+    external: true
+
+# Caddy lives in the racha compose stack. Joining `racha_default` lets it
+# resolve `passos:8080`. Add the block from Caddyfile.snippet to racha's
+# Caddyfile and `docker compose up -d caddy` to pick it up.

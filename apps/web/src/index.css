@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: linear-gradient(135deg, #fef9e7 0%, #fce4b6 100%);
+  color: #2c1810;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-card transition-shadow duration-200;
+  }
+  .card-hover:hover {
+    @apply shadow-cardHover;
+  }
+  .tabnum {
+    font-variant-numeric: tabular-nums;
+  }
+}
