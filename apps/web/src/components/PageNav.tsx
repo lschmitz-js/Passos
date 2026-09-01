@@ -2,13 +2,14 @@ import { Link } from 'wouter';
 import { useT } from '../lib/i18n';
 
 type Props = {
-  current: 'ranking' | 'records' | 'dashboard';
+  current: 'ranking' | 'records' | 'galeria' | 'dashboard';
   group: string;
 };
 
 const TABS: { key: Props['current']; href: (g: string) => string; label: string }[] = [
   { key: 'ranking', href: (g) => `/zoo?group=${g}`, label: 'nav.ranking' },
   { key: 'records', href: (g) => `/records?group=${g}`, label: 'nav.records' },
+  { key: 'galeria', href: (g) => `/galeria?group=${g}`, label: 'nav.galeria' },
   { key: 'dashboard', href: (g) => `/dashboard?group=${g}`, label: 'nav.graphs' },
 ];
 
