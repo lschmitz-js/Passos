@@ -12,6 +12,8 @@ import { Totals } from '../components/Totals';
 import { WeekNav } from '../components/WeekNav';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { buildMonths, trophyCountsById } from '../lib/months';
+import { reigningChampionId } from '../lib/champions';
+import { hotLeader } from '../lib/momentum';
 import { GapBadge } from '../components/GapBadge';
 import { AnimalRef } from '../components/AnimalRef';
 
@@ -76,6 +78,9 @@ export function ZooPage() {
     () => trophyCountsById(buildMonths(weeks, filter)),
     [weeks, filter]
   );
+  const reigning = useMemo(() => reigningChampionId(weeks, filter), [weeks, filter]);
+  // Form, not standing: who has piled on the most over the last two days.
+  const hot = useMemo(() => hotLeader(weeks, filter, 2), [weeks, filter]);
   const weekRows = useMemo(() => (week ? buildWeek(week, prev, filter, bands) : []), [week, prev, filter, bands]);
 
   const yearWeeks = useMemo(() => weeks.slice(0, idx + 1), [weeks, idx]);
@@ -153,6 +158,8 @@ export function ZooPage() {
                       rank={p.rank}
                       animal={p.animal}
                       trophies={trophies.get(p.id) ?? 0}
+                      reigning={p.id === reigning}
+                      hot={p.id === hot?.id}
                       steps={p.steps}
                       prevAligned={p.prevAligned}
                       dailyAvg={p.dailyAvg}
@@ -195,6 +202,8 @@ export function ZooPage() {
                       rank={p.rank}
                       animal={p.animal}
                       trophies={trophies.get(p.id) ?? 0}
+                      reigning={p.id === reigning}
+                      hot={p.id === hot?.id}
                       total={p.total}
                       prevTotal={p.prevTotal}
                       rankDelta={p.rankDelta}

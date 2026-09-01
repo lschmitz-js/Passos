@@ -143,3 +143,11 @@ function championFor(m: Month, series: Record<string, Record<string, number>>): 
     leadTakenOn,
   };
 }
+
+/** The person holding the most recent monthly trophy, or null before any. */
+export function reigningChampionId(
+  weeks: Week[],
+  filter: (e: WeekEntry) => boolean
+): string | null {
+  return buildChampions(weeks, filter)[0]?.winner.id ?? null;
+}

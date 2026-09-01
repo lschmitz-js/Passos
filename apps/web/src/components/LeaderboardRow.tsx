@@ -18,6 +18,10 @@ type CommonProps = {
   animal: Animal;
   /** Monthly trophies held, badged next to the name. */
   trophies?: number;
+  /** Holds the most recent monthly trophy. */
+  reigning?: boolean;
+  /** Most steps over the last couple of days -- gets the daily title. */
+  hot?: boolean;
 };
 
 type WeekProps = CommonProps & {
@@ -152,9 +156,14 @@ export function LeaderboardRow(props: Props) {
             <span className="text-[15px] sm:text-[17px] font-bold truncate">{shownName}</span>
             <TrophyBadge count={props.trophies ?? 0} />
           </div>
-          {props.mode === 'week' && props.rank === 1 && (
+          {props.reigning && (
+            <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-canopy truncate">
+              {t(genderFor(props.id) === 'f' ? 'row.champion.f' : 'row.champion.m')}
+            </div>
+          )}
+          {props.hot && props.mode === 'week' && (
             <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8a6b00] truncate">
-              {titleFor(props.id, genderFor(props.id), todayIso(), locale)}
+              🔥 {titleFor(props.id, genderFor(props.id), todayIso(), locale)}
             </div>
           )}
           <div className="text-[10px] sm:text-xs text-muted2 uppercase tracking-wider truncate">
