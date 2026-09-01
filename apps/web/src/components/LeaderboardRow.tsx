@@ -8,6 +8,8 @@ import type { PersonalRecords as RecordsT, SyncStatus } from '../lib/leaderboard
 import { DayBars } from './DayBars';
 import { PersonalRecords } from './PersonalRecords';
 import { TrophyBadge } from './TrophyBadge';
+import { titleFor } from '../lib/tags';
+import { todayIso } from '../lib/dates';
 
 type CommonProps = {
   id: string;
@@ -150,6 +152,11 @@ export function LeaderboardRow(props: Props) {
             <span className="text-[15px] sm:text-[17px] font-bold truncate">{shownName}</span>
             <TrophyBadge count={props.trophies ?? 0} />
           </div>
+          {props.mode === 'week' && props.rank === 1 && (
+            <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#8a6b00] truncate">
+              {titleFor(props.id, genderFor(props.id), todayIso(), locale)}
+            </div>
+          )}
           <div className="text-[10px] sm:text-xs text-muted2 uppercase tracking-wider truncate">
             {props.animal.emoji} {label}
           </div>
