@@ -67,3 +67,19 @@ re-run `python collect.py` interactively on a laptop, then copy the new
 `~/.garminconnect/` over `data/.garminconnect/` on the VM. The GCS-stored
 tokens used by the GCP collector are independent — refresh both sides as long
 as parallel mode is on.
+
+## Weekly family report
+
+`scripts/weekly-report.mjs` computes the facts behind the weekly WhatsApp
+announcement — standings, the winning margin ranked against every completed
+week, win/podium droughts, personal records, streaks, day-by-day totals and the
+monthly trophy race. It deliberately emits JSON rather than prose: the numbers
+need to be exact, but which story leads is judgment.
+
+```sh
+node scripts/weekly-report.mjs            # last completed week, family, JSON
+node scripts/weekly-report.mjs --pretty   # readable summary
+node scripts/weekly-report.mjs --group todos --week 34
+```
+
+In Claude Code, `/weekly` runs it and writes the announcement in pt-BR.
