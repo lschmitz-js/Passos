@@ -159,8 +159,11 @@ export function LeaderboardRow(props: Props) {
           {props.mode === 'week' && <SyncBadge status={props.syncStatus} />}
           {props.mode === 'year' && (
             <>
-              <div className="text-[11px] sm:text-xs text-muted mt-1 whitespace-nowrap">
-                🏆 {props.wins} · 🥉 {props.podiums}
+              {/* Weekly wins are golds, not trophies -- 🏆 is reserved for the
+                  monthly trophy, which rides beside the name via TrophyBadge. */}
+              <div className="text-[11px] sm:text-xs text-muted mt-1 whitespace-nowrap"
+                   title={t('row.winsPodiums.hint')}>
+                🥇 {props.wins} · 🥉 {props.podiums}
               </div>
             </>
           )}
