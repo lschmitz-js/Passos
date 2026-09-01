@@ -4,15 +4,10 @@ import { useLocation } from 'wouter';
 import { fetchLeaderboard } from '../lib/api';
 import { GROUPS, parseGroup } from '../lib/groups';
 import { buildDailyTimeline, buildWeeklyTimeline, buildRankTimeline } from '../lib/dashboard';
-import { buildRecords } from '../lib/records';
-import { buildAnimalCounts, buildWeekAnimals } from '../lib/animalStats';
-import { computeAnimalBands } from '../lib/leaderboard';
 import { useT } from '../lib/i18n';
 import { Header } from '../components/Header';
 import { PageNav } from '../components/PageNav';
 import { Timeline } from '../components/Timeline';
-import { AnimalsSection } from '../components/AnimalsSection';
-import { RecordsCards } from '../components/RecordsCards';
 import { RangePicker, rangeBounds, type RangeKey } from '../components/RangePicker';
 
 function useGroup() {
@@ -38,10 +33,6 @@ export function DashboardPage() {
   const daily = useMemo(() => buildDailyTimeline(weeks, filter, bounds), [weeks, filter, bounds]);
   const weekly = useMemo(() => buildWeeklyTimeline(weeks, filter, bounds), [weeks, filter, bounds]);
   const ranks = useMemo(() => buildRankTimeline(weeks, filter, bounds), [weeks, filter, bounds]);
-  const bands = useMemo(() => computeAnimalBands(weeks, filter), [weeks, filter]);
-  const animalCounts = useMemo(() => buildAnimalCounts(weeks, filter, bands, bounds), [weeks, filter, bands, bounds]);
-  const weekAnimals = useMemo(() => buildWeekAnimals(weeks, filter, bands, bounds), [weeks, filter, bands, bounds]);
-  const records = useMemo(() => buildRecords(weeks, filter), [weeks, filter]);
   const rankMax = ranks.users.length;
 
   return (
@@ -64,7 +55,6 @@ export function DashboardPage() {
       {!isLoading && weeks.length > 0 && (
         <>
           <RangePicker value={range} onChange={setRange} />
-          <AnimalsSection counts={animalCounts} weekly={weekAnimals} />
           <Timeline
             title={t('timeline.daily')}
             subtitle={t('days.window', daily.points.length)}
@@ -85,7 +75,6 @@ export function DashboardPage() {
             yMode="rank"
             rankMax={rankMax}
           />
-          <RecordsCards records={records} />
         </>
       )}
     </div>
