@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { fetchLeaderboard, fetchChampionNotes, type ChampionNote } from '../lib/api';
 import { GROUPS, parseGroup, displayName } from '../lib/groups';
-import { buildChampions, buildPreEraWinners } from '../lib/champions';
+import { buildChampions } from '../lib/champions';
 import { formatMonthLocale } from '../lib/dates';
 import { useT, useLocale, fmtNumLocale } from '../lib/i18n';
 import { Header } from '../components/Header';
@@ -36,7 +36,6 @@ export function GaleriaPage() {
   const weeks = data?.weeks ?? [];
   const filter = GROUPS[group].filter;
   const champions = useMemo(() => buildChampions(weeks, filter), [weeks, filter]);
-  const preEra = useMemo(() => buildPreEraWinners(weeks, filter), [weeks, filter]);
   const [openKey, setOpenKey] = useState<string | null>(null);
 
   const reigning = champions[0];
@@ -129,30 +128,6 @@ export function GaleriaPage() {
         </section>
       )}
 
-      {preEra.length > 0 && (
-        <section className="card p-5">
-          <h2 className="display text-lg font-semibold tracking-tight mb-0.5">
-            {t('gal.before')}
-          </h2>
-          <p className="text-[12px] text-muted3 mb-3">{t('gal.before.sub')}</p>
-          <div className="flex flex-col">
-            {[...preEra].reverse().map((w, i) => (
-              <div
-                key={w.monthKey}
-                className={`flex items-center gap-3 py-2 ${i > 0 ? 'border-t border-ink/5' : ''}`}
-              >
-                <span className="text-[13px] text-muted2 w-[92px] shrink-0">
-                  {formatMonthLocale(w.monthKey, locale)}
-                </span>
-                <span className="text-[14px] font-semibold truncate">{w.name}</span>
-                <span className="ml-auto tabnum text-[13px] text-muted">
-                  {fmtNumLocale(w.steps, locale)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

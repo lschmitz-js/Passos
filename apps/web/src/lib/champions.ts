@@ -143,16 +143,3 @@ function championFor(m: Month, series: Record<string, Record<string, number>>): 
     leadTakenOn,
   };
 }
-
-/**
- * Month winners from before trophies existed. Shown as an unofficial record so
- * the gallery has history behind it, clearly separated from real trophies.
- */
-export function buildPreEraWinners(
-  weeks: Week[],
-  filter: (e: WeekEntry) => boolean
-): { monthKey: string; name: string; steps: number }[] {
-  return buildMonths(weeks, filter)
-    .filter((m) => m.complete && !m.partial && isPreTrophyEra(m.key))
-    .map((m) => ({ monthKey: m.key, name: m.entries[0]!.name, steps: m.entries[0]!.steps }));
-}
