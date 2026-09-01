@@ -1,22 +1,23 @@
+# Runs on CTPASSOS (10.0.0.151), an LXC on the Proxmox node `mgm`.
+#
+# Caddy lives in a separate container (CTCADDY, 10.0.0.57) and reaches the app
+# over the LAN, so the port is published on the LAN interface. The previous GCP
+# deployment instead shared a docker network with Caddy and resolved
+# `passos:8080`; see git history if that setup is ever needed again.
+#
+# Deploy:  docker compose up -d --build
 services:
   passos:
     build: .
     image: passos:latest
     container_name: passos
     restart: unless-stopped
-    # Caddy reaches this via the shared docker network at `passos:8080`.
-    # 8081 stays mapped publicly for IP-based testing during parallel run;
-    # drop it once zoologico.lbschmitz.ca is verified.
-    expose:
-      - "8080"
     ports:
-      - "8081:8080"
+      - "10.0.0.151:8080:8080"
     volumes:
-      - ./data:/data
+      - /opt/passos/data:/data
     environment:
       DB_PATH: /data/passos.db
-    networks:
-      - racha_default
 
   passos-collector:
     build:
@@ -26,7 +27,7 @@ services:
     container_name: passos-collector
     restart: unless-stopped
     volumes:
-      - ./data:/data
+      - /opt/passos/data:/data
     environment:
       DB_PATH: /data/passos.db
       TOKENSTORE: /data/.garminconnect
@@ -35,11 +36,3 @@ services:
       LOOKBACK_DAYS: "7"
     depends_on:
       - passos
-
-networks:
-  racha_default:
-    external: true
-
-# Caddy lives in the racha compose stack. Joining `racha_default` lets it
-# resolve `passos:8080`. Add the block from Caddyfile.snippet to racha's
-# Caddyfile and `docker compose up -d caddy` to pick it up.
