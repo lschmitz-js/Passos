@@ -25,6 +25,8 @@ export async function fetchLeaderboard(): Promise<LeaderboardResponse> {
  *  simply not in the map -- a champion without a story still renders. */
 export type ChampionNote = {
   photo?: string;
+  /** A full celebration image for the month. Shown in place of the avatar. */
+  poster?: string;
   lead?: string;
   acts?: { label: string; text: string }[];
   closing?: string;

@@ -25,6 +25,7 @@ import { dirname, join, extname } from 'node:path';
 
 export type ChampionNote = {
   photo?: string;
+  poster?: string;
   lead?: string;
   acts?: { label: string; text: string }[];
   closing?: string;

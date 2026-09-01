@@ -80,6 +80,7 @@ export function GaleriaPage() {
           <p className="text-[13px] text-muted mb-4">
             {t('gal.reigning.sub', fmtNumLocale(reigning.stats.marginOverSecond, locale))}
           </p>
+          <ChampionPoster note={notes?.[reigning.monthKey]} />
           <ChampionMonth champion={reigning} />
           <ChampionStory note={notes?.[reigning.monthKey]} />
         </section>
@@ -117,6 +118,7 @@ export function GaleriaPage() {
                 </button>
                 {openKey === c.monthKey && (
                   <div className="mt-4 pt-4 border-t border-ink/5">
+                    <ChampionPoster note={notes?.[c.monthKey]} />
                     <ChampionMonth champion={c} />
                     <ChampionStory note={notes?.[c.monthKey]} />
                   </div>
@@ -157,7 +159,9 @@ export function GaleriaPage() {
 
 /** The champion's photo when one is on file, the trophy when not. */
 function ChampionFace({ note }: { note?: ChampionNote }) {
-  if (!note?.photo) return <span className="text-[40px] leading-none">🏆</span>;
+  // The poster already shows her face and name at size; a thumbnail beside it
+  // is the same picture twice.
+  if (note?.poster || !note?.photo) return <span className="text-[40px] leading-none">🏆</span>;
   return (
     <span className="relative shrink-0">
       <img
@@ -200,5 +204,23 @@ function ChampionStory({ note }: { note?: ChampionNote }) {
         </p>
       )}
     </div>
+  );
+}
+
+/** The month's celebration image, when one has been made for it. */
+function ChampionPoster({ note }: { note?: ChampionNote }) {
+  if (!note?.poster) return null;
+  return (
+    <figure className="m-0 mb-4 flex justify-center">
+      <img
+        src={`/api/champions/photo/${note.poster}`}
+        alt=""
+        loading="lazy"
+        className="rounded-2xl shadow-e2 max-h-[560px] w-auto max-w-full"
+        onError={(e) => {
+          (e.currentTarget.closest('figure') as HTMLElement).style.display = 'none';
+        }}
+      />
+    </figure>
   );
 }

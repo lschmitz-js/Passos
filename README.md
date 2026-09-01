@@ -91,8 +91,8 @@ runforbeer's `notes.json`, these live on the data volume rather than in the
 database, so a collector run or a restore can never clobber them:
 
 ```
-data/champions.json              # keyed by month: "2026-08": { photo, lead, acts[], closing }
-data/champions/<photo>.jpg       # served via /api/champions/photo/<file>
+data/champions.json              # keyed by month: "2026-08": { photo, poster, lead, acts[], closing }
+data/champions/<file>.jpg        # photo + poster, served via /api/champions/photo/<file>
 ```
 
 Written in whatever language the family writes in and shown as-is in every
