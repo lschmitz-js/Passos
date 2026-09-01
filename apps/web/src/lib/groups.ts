@@ -1,5 +1,6 @@
 import type { WeekEntry } from './api';
 import type { Gender } from './animals';
+import type { Locale } from './i18n';
 
 export type GroupKey = 'familia' | 'todos';
 
@@ -10,6 +11,7 @@ const FAMILY_IDS = new Set([
   '111100771', // Leo
   '139402941', // Ivana
   '111133818', // Elisabeth
+  '149194897', // Laurent
 ]);
 
 // Hardcoded gender per Garmin profile id. Used to pick the right form of the
@@ -21,6 +23,7 @@ export const GENDERS: Record<string, Gender> = {
   '111100771': 'm', // Leo
   '139402941': 'f', // Ivana
   '111133818': 'f', // Elisabeth
+  '149194897': 'm', // Laurent
   '115345692': 'm', // Andre
   '8646058':   'm', // Felipe
   '142597657': 'm', // Bill
@@ -31,12 +34,12 @@ export function genderFor(id: string): Gender {
   return GENDERS[id] ?? 'm';
 }
 
-const DISPLAY_OVERRIDES: Record<string, { pt: string; en: string }> = {
-  '133104715': { pt: 'Mãe', en: 'Mom' }, // Alice
-  '136467633': { pt: 'Pai', en: 'Dad' }, // Joao Bruno
+const DISPLAY_OVERRIDES: Record<string, Record<Locale, string>> = {
+  '133104715': { pt: 'Mãe', en: 'Mom', fr: 'Maman' }, // Alice
+  '136467633': { pt: 'Pai', en: 'Dad', fr: 'Papa' }, // Joao Bruno
 };
 
-export function displayName(id: string, fullName: string, locale: 'pt' | 'en'): string {
+export function displayName(id: string, fullName: string, locale: Locale): string {
   const override = DISPLAY_OVERRIDES[id];
   if (override) return override[locale];
   return fullName.split(' ')[0] ?? fullName;

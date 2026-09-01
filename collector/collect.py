@@ -25,6 +25,7 @@ FAMILY_IDS = {
     "111100771",  # Leo
     "139402941",  # Ivana
     "111133818",  # Elisabeth
+    "149194897",  # Laurent
 }
 
 SCHEMA = """

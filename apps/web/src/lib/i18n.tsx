@@ -1,6 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-export type Locale = 'pt' | 'en';
+export type Locale = 'pt' | 'en' | 'fr';
+
+export const LOCALES: Locale[] = ['pt', 'en', 'fr'];
+
+const HTML_LANG: Record<Locale, string> = { pt: 'pt-BR', en: 'en', fr: 'fr' };
+
+function isLocale(value: string | null): value is Locale {
+  return value === 'pt' || value === 'en' || value === 'fr';
+}
 
 type Ctx = { locale: Locale; setLocale: (l: Locale) => void };
 const LocaleContext = createContext<Ctx | null>(null);
@@ -11,11 +19,11 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>(() => {
     if (typeof window === 'undefined') return 'pt';
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    return stored === 'en' ? 'en' : 'pt';
+    return isLocale(stored) ? stored : 'pt';
   });
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, locale);
-    document.documentElement.lang = locale === 'en' ? 'en' : 'pt-BR';
+    document.documentElement.lang = HTML_LANG[locale];
   }, [locale]);
   return <LocaleContext.Provider value={{ locale, setLocale }}>{children}</LocaleContext.Provider>;
 }
@@ -233,6 +241,109 @@ const DICT: Record<Locale, Record<string, string>> = {
     'dayName.fri': 'Friday',
     'dayName.sat': 'Saturday',
   },
+  fr: {
+    'nav.ranking': 'Classement',
+    'nav.graphs': 'Graphiques',
+    'group.familia': '🏡 Famille',
+    'group.todos': '🌍 Famille et Amis',
+    'home.title': 'Zoo des Pas 🦌',
+    'home.subtitle': 'Plus tu marches, plus ton animal est nomade',
+    'home.tile.familia.title': 'Famille',
+    'home.tile.familia.sub': 'compétition entre Schmitz',
+    'home.tile.todos.title': 'Famille et Amis',
+    'home.tile.todos.sub': 'tout le monde au classement',
+    'header.subtitle': 'Plus tu marches, plus ton animal est nomade',
+    'header.subtitle.graphs': 'Tendances, records et chronologies',
+    'header.back': '← changer de groupe',
+    'header.title.graphs': 'Graphiques 📈',
+    'section.thisWeek': 'Cette Semaine',
+    'section.year': 'Toute l’Année',
+    'section.weekRange': '{0} – {1}',
+    'section.weekCount': '{0} semaine',
+    'section.weekCount.plural': '{0} semaines',
+    'totals.competitors': 'Participants',
+    'totals.steps': 'Pas',
+    'totals.walked': 'Parcourus',
+    'row.steps': 'pas',
+    'row.perDay': '{0}/jour',
+    'row.firstWeek': 'première semaine',
+    'row.sameAsLast': 'idem sem. préc.',
+    'row.vsLastWeek': 'vs sem. préc.',
+    'row.vsLastSnap': 'vs sem. préc.',
+    'row.new': 'nouveau',
+    'row.lastSync': 'dernière sync : {0}',
+    'row.noSyncThisWeek': 'aucune sync cette semaine',
+    'year.asOf': 'fin {0}',
+    'row.wins': '{0} victoire',
+    'row.wins.plural': '{0} victoires',
+    'row.podiums': '{0} podium',
+    'row.podiums.plural': '{0} podiums',
+    'gap.diff': '↑ {0} pas d’écart',
+    'gap.last4': '4 dernières semaines',
+    'week.num': 'Semaine {0}',
+    'days.window': '{0} derniers jours',
+    'days.window.weeks': '{0} dernières semaines',
+    'records.title': 'Records',
+    'records.bestDay': 'Record de l’année',
+    'records.bestDay.value': '{0} · {1} pas',
+    'records.streak': 'Plus longue série ≥10k/jour',
+    'records.streak.value': '{0} · {1} jours de suite',
+    'records.bestWeek': 'Meilleure semaine',
+    'records.bestWeek.value': '{0} · {1} pas',
+    'records.totalKm': 'Total parcouru par le groupe',
+    'records.totalKm.value': '{0} km',
+    'pr.title': 'Records personnels',
+    'pr.bestDay': 'Meilleur jour',
+    'pr.bestWeek': 'Meilleure semaine',
+    'pr.streak': 'Plus longue série ≥10k/jour',
+    'pr.totalKm': 'Distance totale',
+    'pr.favoriteDay': 'Jour préféré de la semaine',
+    'pr.consistency': 'Régularité',
+    'pr.consistency.value': '{0} sur {1} jours',
+    'pr.consistency.sub': '{0}% des jours en marche',
+    'pr.steps': '{0} pas',
+    'pr.days': '{0} jours de suite',
+    'pr.km': '{0} km',
+    'pr.avgSub': 'moyenne {0} pas',
+    'today.title': 'Aujourd’hui',
+    'today.updated': 'mis à jour {0}',
+    'updated.label': 'Mis à jour {0}',
+    'loading': 'Chargement…',
+    'error.load': 'Erreur au chargement des données.',
+    'empty': 'Pas encore de données.',
+    'animal.notFound': 'Page introuvable.',
+    'animalRef.title': 'Animaux par distance quotidienne',
+    'animalRef.sub': 'Chaque palier attribue l’animal selon ton rythme de pas.',
+    'animalRef.col.natural': 'km/jour',
+    'animalRef.col.band': 'pas/jour actuels',
+    'animalRef.km.day': '~{0} km/jour',
+    'animalRef.m.day': '{0} m/jour',
+    'animalRef.bandTop': 'plus de {0}',
+    'animalRef.bandBottom': 'jusqu’à {0}',
+    'animalRef.bandRange': '{0} – {1}',
+    'timeline.daily': 'Chronologie quotidienne',
+    'timeline.weekly': 'Chronologie hebdomadaire',
+    'timeline.rank': 'Position par semaine',
+    'medals.title': 'Médailles',
+    'medals.tab.table': 'Tableau',
+    'medals.tab.history': 'Par semaine',
+    'medals.empty': 'Aucune semaine complète sur la période.',
+    'medals.stepsShort': '{0}',
+    'animals.title': 'Animaux',
+    'range.MTD': 'Mois en cours',
+    'range.LAST_MONTH': 'Mois dernier',
+    'range.L3M': '3 derniers mois',
+    'range.L6M': '6 derniers mois',
+    'range.YTD': 'Année',
+    'range.ALL': 'Tout',
+    'dayName.sun': 'Dimanche',
+    'dayName.mon': 'Lundi',
+    'dayName.tue': 'Mardi',
+    'dayName.wed': 'Mercredi',
+    'dayName.thu': 'Jeudi',
+    'dayName.fri': 'Vendredi',
+    'dayName.sat': 'Samedi',
+  },
 };
 
 export function useT() {
@@ -246,18 +357,28 @@ export function useT() {
   };
 }
 
+const MESES_BY_LOCALE: Record<Locale, string[]> = {
+  pt: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  fr: ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'],
+};
+
+const DIAS_BY_LOCALE: Record<Locale, string[]> = {
+  pt: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  fr: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+};
+
+const NUM_LOCALE: Record<Locale, string> = { pt: 'pt-BR', en: 'en-US', fr: 'fr-FR' };
+
 export function localeMeses(l: Locale): string[] {
-  return l === 'en'
-    ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    : ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  return MESES_BY_LOCALE[l];
 }
 
 export function localeDias(l: Locale): string[] {
-  return l === 'en'
-    ? ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    : ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  return DIAS_BY_LOCALE[l];
 }
 
 export function fmtNumLocale(n: number, locale: Locale): string {
-  return n.toLocaleString(locale === 'en' ? 'en-US' : 'pt-BR');
+  return n.toLocaleString(NUM_LOCALE[locale]);
 }

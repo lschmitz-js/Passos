@@ -1,4 +1,4 @@
-import { useLocale } from '../lib/i18n';
+import { useLocale, LOCALES } from '../lib/i18n';
 
 export function LocalePicker() {
   const { locale, setLocale } = useLocale();
@@ -7,18 +7,15 @@ export function LocalePicker() {
   const idle = 'text-muted hover:text-ink';
   return (
     <div className="flex items-center gap-0.5 bg-white/80 rounded-full p-0.5 shadow-sm">
-      <button
-        className={`${btnBase} ${locale === 'pt' ? active : idle}`}
-        onClick={() => setLocale('pt')}
-      >
-        PT
-      </button>
-      <button
-        className={`${btnBase} ${locale === 'en' ? active : idle}`}
-        onClick={() => setLocale('en')}
-      >
-        EN
-      </button>
+      {LOCALES.map((l) => (
+        <button
+          key={l}
+          className={`${btnBase} ${locale === l ? active : idle}`}
+          onClick={() => setLocale(l)}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
     </div>
   );
 }

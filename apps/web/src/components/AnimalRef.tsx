@@ -1,6 +1,6 @@
-import { ANIMALS, animalName, bandRange, type AnimalBands } from '../lib/animals';
+import { ANIMALS, animalName, animalFact, bandRange, type AnimalBands } from '../lib/animals';
 import { genderFor } from '../lib/groups';
-import { useLocale, useT, fmtNumLocale } from '../lib/i18n';
+import { useLocale, useT, fmtNumLocale, type Locale } from '../lib/i18n';
 
 type Props = {
   bands?: AnimalBands;
@@ -39,7 +39,7 @@ export function AnimalRef({ bands, perspectiveId }: Props) {
               <div className="tabnum text-muted font-semibold text-right">
                 {showBands ? rangeLabel : fmtKm(a.km, locale, t)}
               </div>
-              <div className="text-muted text-xs">{locale === 'en' ? a.fact.en : a.fact.pt}</div>
+              <div className="text-muted text-xs">{animalFact(a, locale)}</div>
             </div>
           );
         })}
@@ -48,7 +48,7 @@ export function AnimalRef({ bands, perspectiveId }: Props) {
   );
 }
 
-function fmtKm(km: number, locale: 'pt' | 'en', t: (key: string, ...args: (string | number)[]) => string): string {
+function fmtKm(km: number, locale: Locale, t: (key: string, ...args: (string | number)[]) => string): string {
   if (km >= 1) return t('animalRef.km.day', km);
   return t('animalRef.m.day', fmtNumLocale(km * 1000, locale));
 }
