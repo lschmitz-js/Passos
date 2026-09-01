@@ -7,12 +7,15 @@ import { genderFor, displayName } from '../lib/groups';
 import type { PersonalRecords as RecordsT, SyncStatus } from '../lib/leaderboard';
 import { DayBars } from './DayBars';
 import { PersonalRecords } from './PersonalRecords';
+import { TrophyBadge } from './TrophyBadge';
 
 type CommonProps = {
   id: string;
   name: string;
   rank: number;
   animal: Animal;
+  /** Monthly trophies held, badged next to the name. */
+  trophies?: number;
 };
 
 type WeekProps = CommonProps & {
@@ -143,7 +146,10 @@ export function LeaderboardRow(props: Props) {
         </div>
 
         <div className="flex flex-col gap-0.5 min-w-0">
-          <div className="text-[15px] sm:text-[17px] font-bold truncate">{shownName}</div>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-[15px] sm:text-[17px] font-bold truncate">{shownName}</span>
+            <TrophyBadge count={props.trophies ?? 0} />
+          </div>
           <div className="text-[10px] sm:text-xs text-muted2 uppercase tracking-wider truncate">
             {props.animal.emoji} {label}
           </div>

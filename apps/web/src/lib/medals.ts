@@ -1,5 +1,5 @@
 import type { Week, WeekEntry } from './api';
-import { todayIso } from './dates';
+import { isWeekComplete } from './dates';
 
 export type MedalCounts = {
   id: string;
@@ -14,10 +14,10 @@ export function buildMedalTable(
   filter: (e: WeekEntry) => boolean,
   range?: { from: string; to: string }
 ): MedalCounts[] {
-  const today = todayIso();
   const map = new Map<string, MedalCounts>();
   for (const w of weeks) {
-    if (w.weekStart > today) continue;
+    // Only finished weeks award medals -- see isWeekComplete.
+    if (!isWeekComplete(w.weekEnd)) continue;
     if (range && (w.weekStart < range.from || w.weekStart > range.to)) continue;
     const ranked = [...w.entries.filter(filter)].sort((a, b) => b.steps - a.steps);
     ranked.slice(0, 3).forEach((e, i) => {
@@ -51,9 +51,8 @@ export function buildWeekPodiums(
   filter: (e: WeekEntry) => boolean,
   range?: { from: string; to: string }
 ): WeekPodium[] {
-  const today = todayIso();
   return weeks
-    .filter((w) => w.weekStart <= today)
+    .filter((w) => isWeekComplete(w.weekEnd))
     .filter((w) => !range || (w.weekStart >= range.from && w.weekStart <= range.to))
     .map((w) => {
       const ranked = [...w.entries.filter(filter)]

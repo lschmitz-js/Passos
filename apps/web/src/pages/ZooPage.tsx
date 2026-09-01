@@ -11,6 +11,7 @@ import { PageNav } from '../components/PageNav';
 import { Totals } from '../components/Totals';
 import { WeekNav } from '../components/WeekNav';
 import { LeaderboardRow } from '../components/LeaderboardRow';
+import { buildMonths, trophyCountsById } from '../lib/months';
 import { GapBadge } from '../components/GapBadge';
 import { AnimalRef } from '../components/AnimalRef';
 
@@ -70,6 +71,11 @@ export function ZooPage() {
   const filter = GROUPS[group].filter;
 
   const bands = useMemo(() => computeAnimalBands(weeks, filter), [weeks, filter]);
+  // Monthly trophies, badged next to each name on the board.
+  const trophies = useMemo(
+    () => trophyCountsById(buildMonths(weeks, filter)),
+    [weeks, filter]
+  );
   const weekRows = useMemo(() => (week ? buildWeek(week, prev, filter, bands) : []), [week, prev, filter, bands]);
 
   const yearWeeks = useMemo(() => weeks.slice(0, idx + 1), [weeks, idx]);
@@ -146,6 +152,7 @@ export function ZooPage() {
                       name={p.name}
                       rank={p.rank}
                       animal={p.animal}
+                      trophies={trophies.get(p.id) ?? 0}
                       steps={p.steps}
                       prevAligned={p.prevAligned}
                       dailyAvg={p.dailyAvg}
@@ -187,6 +194,7 @@ export function ZooPage() {
                       name={p.name}
                       rank={p.rank}
                       animal={p.animal}
+                      trophies={trophies.get(p.id) ?? 0}
                       total={p.total}
                       prevTotal={p.prevTotal}
                       rankDelta={p.rankDelta}

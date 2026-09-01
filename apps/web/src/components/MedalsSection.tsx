@@ -3,13 +3,16 @@ import { useT, useLocale } from '../lib/i18n';
 import { displayName } from '../lib/groups';
 import { fmtNum, formatDateLocale } from '../lib/dates';
 import type { MedalCounts, WeekPodium } from '../lib/medals';
+import { TrophyBadge } from './TrophyBadge';
 
 type Props = {
   medals: MedalCounts[];
   podiums: WeekPodium[];
+  /** id -> trophies held; badges the name so medals and trophies read together. */
+  trophies?: Map<string, number>;
 };
 
-export function MedalsSection({ medals, podiums }: Props) {
+export function MedalsSection({ medals, podiums, trophies }: Props) {
   const t = useT();
   const [view, setView] = useState<'table' | 'history'>('table');
   const tabBase = 'px-3 py-1 rounded-full text-[12px] font-semibold transition-colors';
@@ -18,9 +21,9 @@ export function MedalsSection({ medals, podiums }: Props) {
 
   return (
     <section className="card p-5 mb-7">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-bold tracking-tight">{t('medals.title')}</h2>
-        <div className="flex gap-0.5 bg-black/5 rounded-full p-0.5">
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="display text-lg font-semibold tracking-tight">{t('medals.title')}</h2>
+        <div className="flex gap-0.5 bg-ink/5 rounded-full p-0.5">
           <button onClick={() => setView('table')} className={`${tabBase} ${view === 'table' ? tabActive : tabIdle}`}>
             {t('medals.tab.table')}
           </button>
@@ -29,14 +32,24 @@ export function MedalsSection({ medals, podiums }: Props) {
           </button>
         </div>
       </div>
+      <p className="text-[12px] text-muted3 mb-3">{t('medals.sub')}</p>
 
-      {view === 'table' && <MedalTable medals={medals} />}
+      {view === 'table' && <MedalTable medals={medals} trophies={trophies} />}
       {view === 'history' && <WeekHistory podiums={podiums} />}
     </section>
   );
 }
 
-function MedalTable({ medals }: { medals: MedalCounts[] }) {
+// name | gold | silver | bronze | total
+const COLS = '1fr 38px 38px 38px 46px';
+
+function MedalTable({
+  medals,
+  trophies,
+}: {
+  medals: MedalCounts[];
+  trophies?: Map<string, number>;
+}) {
   const t = useT();
   const { locale } = useLocale();
   if (medals.length === 0) {
@@ -46,23 +59,25 @@ function MedalTable({ medals }: { medals: MedalCounts[] }) {
     <div>
       <div
         className="grid items-center gap-2 px-1 pb-2 text-[10px] uppercase tracking-wider text-muted2"
-        style={{ gridTemplateColumns: '1fr 40px 40px 40px' }}
+        style={{ gridTemplateColumns: COLS }}
       >
         <span></span>
         <span className="text-center">🥇</span>
         <span className="text-center">🥈</span>
         <span className="text-center">🥉</span>
+        <span className="text-center">{t('medals.total')}</span>
       </div>
       {medals.map((m, i) => (
         <div
           key={m.id}
           className={`grid items-center gap-2 py-2.5 px-1 ${i > 0 ? 'border-t border-black/5' : ''}`}
-          style={{ gridTemplateColumns: '1fr 40px 40px 40px' }}
+          style={{ gridTemplateColumns: COLS }}
         >
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span className="text-[14px] sm:text-[15px] font-bold truncate">
               {displayName(m.id, m.name, locale)}
             </span>
+            <TrophyBadge count={trophies?.get(m.id) ?? 0} />
           </div>
           <span className={`text-center tabnum text-[15px] font-bold ${m.gold > 0 ? 'text-gold' : 'text-muted4'}`}>
             {m.gold}
@@ -72,6 +87,9 @@ function MedalTable({ medals }: { medals: MedalCounts[] }) {
           </span>
           <span className={`text-center tabnum text-[15px] ${m.bronze > 0 ? 'text-bronze font-bold' : 'text-muted4'}`}>
             {m.bronze}
+          </span>
+          <span className="text-center tabnum text-[15px] font-bold text-ink">
+            {m.gold + m.silver + m.bronze}
           </span>
         </div>
       ))}

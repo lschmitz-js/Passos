@@ -2,29 +2,33 @@ import { Link } from 'wouter';
 import { useT } from '../lib/i18n';
 
 type Props = {
-  current: 'ranking' | 'dashboard';
+  current: 'ranking' | 'records' | 'dashboard';
   group: string;
 };
 
+const TABS: { key: Props['current']; href: (g: string) => string; label: string }[] = [
+  { key: 'ranking', href: (g) => `/zoo?group=${g}`, label: 'nav.ranking' },
+  { key: 'records', href: (g) => `/records?group=${g}`, label: 'nav.records' },
+  { key: 'dashboard', href: (g) => `/dashboard?group=${g}`, label: 'nav.graphs' },
+];
+
 export function PageNav({ current, group }: Props) {
   const t = useT();
-  const base = `px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors`;
-  const active = `bg-ink text-white shadow-sm`;
-  const idle = `bg-white/70 text-muted hover:bg-white hover:text-ink`;
+  const base = 'px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors';
+  const active = 'bg-ink text-white shadow-e1';
+  const idle = 'bg-card/70 text-muted hover:bg-card hover:text-ink';
   return (
-    <div className="flex justify-center gap-2 mb-4">
-      <Link
-        href={`/zoo?group=${group}`}
-        className={`${base} ${current === 'ranking' ? active : idle}`}
-      >
-        {t('nav.ranking')}
-      </Link>
-      <Link
-        href={`/dashboard?group=${group}`}
-        className={`${base} ${current === 'dashboard' ? active : idle}`}
-      >
-        {t('nav.graphs')}
-      </Link>
-    </div>
+    <nav className="flex justify-center gap-2 mb-4">
+      {TABS.map((tab) => (
+        <Link
+          key={tab.key}
+          href={tab.href(group)}
+          className={`${base} ${current === tab.key ? active : idle}`}
+          aria-current={current === tab.key ? 'page' : undefined}
+        >
+          {t(tab.label)}
+        </Link>
+      ))}
+    </nav>
   );
 }

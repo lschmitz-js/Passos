@@ -1,6 +1,7 @@
 import { Route, Switch } from 'wouter';
 import { HomePage } from './pages/HomePage';
 import { ZooPage } from './pages/ZooPage';
+import { RecordsPage } from './pages/RecordsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { LocaleProvider, useT } from './lib/i18n';
 
@@ -15,6 +16,7 @@ export function App() {
       <Switch>
         <Route path="/" component={HomePage} />
         <Route path="/zoo" component={ZooPage} />
+        <Route path="/records" component={RecordsPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route>
           <NotFound />
