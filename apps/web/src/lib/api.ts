@@ -20,3 +20,18 @@ export async function fetchLeaderboard(): Promise<LeaderboardResponse> {
   if (!res.ok) throw new Error(`leaderboard fetch failed: ${res.status}`);
   return res.json();
 }
+
+/** Hand-written champion notes, keyed by month ("2026-08"). Absent months are
+ *  simply not in the map -- a champion without a story still renders. */
+export type ChampionNote = {
+  photo?: string;
+  lead?: string;
+  acts?: { label: string; text: string }[];
+  closing?: string;
+};
+
+export async function fetchChampionNotes(): Promise<Record<string, ChampionNote>> {
+  const res = await fetch('/api/champions');
+  if (!res.ok) return {};
+  return res.json();
+}

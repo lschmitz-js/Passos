@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
-import { fetchLeaderboard } from '../lib/api';
+import { fetchLeaderboard, fetchChampionNotes, type ChampionNote } from '../lib/api';
 import { GROUPS, parseGroup, displayName } from '../lib/groups';
 import { buildChampions, buildPreEraWinners } from '../lib/champions';
 import { formatMonthLocale } from '../lib/dates';
@@ -25,6 +25,12 @@ export function GaleriaPage() {
     queryFn: fetchLeaderboard,
     refetchInterval: 60 * 60 * 1000,
     refetchIntervalInBackground: false,
+  });
+
+  const { data: notes } = useQuery({
+    queryKey: ['champion-notes'],
+    queryFn: fetchChampionNotes,
+    staleTime: 60 * 60 * 1000,
   });
 
   const weeks = data?.weeks ?? [];
@@ -61,7 +67,7 @@ export function GaleriaPage() {
         <section className="card p-5 sm:p-6 mb-7 bg-trophy shadow-inset1">
           <div className="eyebrow mb-1">{t('gal.reigning')}</div>
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-[40px] leading-none">🏆</span>
+            <ChampionFace note={notes?.[reigning.monthKey]} />
             <div className="min-w-0">
               <div className="display text-statLg font-semibold truncate">
                 {displayName(reigning.winner.id, reigning.winner.name, locale)}
@@ -75,6 +81,7 @@ export function GaleriaPage() {
             {t('gal.reigning.sub', fmtNumLocale(reigning.stats.marginOverSecond, locale))}
           </p>
           <ChampionMonth champion={reigning} />
+          <ChampionStory note={notes?.[reigning.monthKey]} />
         </section>
       )}
 
@@ -111,6 +118,7 @@ export function GaleriaPage() {
                 {openKey === c.monthKey && (
                   <div className="mt-4 pt-4 border-t border-ink/5">
                     <ChampionMonth champion={c} />
+                    <ChampionStory note={notes?.[c.monthKey]} />
                   </div>
                 )}
               </div>
@@ -142,6 +150,54 @@ export function GaleriaPage() {
             ))}
           </div>
         </section>
+      )}
+    </div>
+  );
+}
+
+/** The champion's photo when one is on file, the trophy when not. */
+function ChampionFace({ note }: { note?: ChampionNote }) {
+  if (!note?.photo) return <span className="text-[40px] leading-none">🏆</span>;
+  return (
+    <span className="relative shrink-0">
+      <img
+        src={`/api/champions/photo/${note.photo}`}
+        alt=""
+        className="w-[68px] h-[68px] rounded-full object-cover border-[3px] border-card shadow-e1"
+        onError={(e) => {
+          // A photo named in champions.json but missing from the volume should
+          // degrade to the trophy, not a broken image.
+          (e.currentTarget as HTMLImageElement).style.display = 'none';
+        }}
+      />
+      <span className="absolute -bottom-1 -right-1 text-[22px] leading-none">🏆</span>
+    </span>
+  );
+}
+
+/** Hand-written, shown as written -- not translated, because it is someone's
+ *  own account of their month. */
+function ChampionStory({ note }: { note?: ChampionNote }) {
+  if (!note || (!note.lead && !note.acts?.length && !note.closing)) return null;
+  return (
+    <div className="mt-4 pt-4 border-t border-ink/10">
+      {note.lead && (
+        <p className="text-[15px] leading-snug font-semibold mb-3">{note.lead}</p>
+      )}
+      {note.acts && note.acts.length > 0 && (
+        <div className="flex flex-col gap-2.5">
+          {note.acts.map((a, i) => (
+            <div key={i}>
+              <div className="eyebrow mb-0.5">{a.label}</div>
+              <p className="text-[14px] leading-snug text-muted">{a.text}</p>
+            </div>
+          ))}
+        </div>
+      )}
+      {note.closing && (
+        <p className="display text-[15px] font-semibold mt-3 pt-3 border-t border-ink/5">
+          {note.closing}
+        </p>
       )}
     </div>
   );

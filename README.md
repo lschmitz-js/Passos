@@ -83,3 +83,18 @@ node scripts/weekly-report.mjs --group todos --week 34
 ```
 
 In Claude Code, `/weekly` runs it and writes the announcement in pt-BR.
+
+## Champion stories
+
+The Galeria de Campeões shows a hand-written story and photo per champion. Like
+runforbeer's `notes.json`, these live on the data volume rather than in the
+database, so a collector run or a restore can never clobber them:
+
+```
+data/champions.json              # keyed by month: "2026-08": { photo, lead, acts[], closing }
+data/champions/<photo>.jpg       # served via /api/champions/photo/<file>
+```
+
+Written in whatever language the family writes in and shown as-is in every
+locale — it is someone's own account of their month, not UI copy to translate.
+A month with no entry still renders; the trophy stands in for a missing photo.

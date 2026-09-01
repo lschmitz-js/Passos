@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getDb } from './db/index.js';
 import { leaderboard } from './routes/leaderboard.js';
+import { champions } from './routes/champions.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,7 @@ app.use(logger());
 
 app.get('/api/health', (c) => c.json({ ok: true }));
 app.route('/', leaderboard);
+app.route('/', champions);
 
 const candidates = [
   process.env.WEB_ROOT,
